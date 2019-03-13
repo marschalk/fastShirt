@@ -1,0 +1,19 @@
+{
+  "name": "fast-shirt",
+  "version": "0.0.1",
+  "description": "Fast Design upload to Spreadshirt, Shirtee and Redbubble. Set Description, Keyword and Color.",
+  "main": "main.js",
+  "dependencies": {
+    "csv": "^3.1.0",
+    "fast-csv": "^2.4.1",
+    "os": "^0.1.1",
+    "puppeteer": "^1.7.0",
+    "readline": "^1.3.0"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Kris Marschalk",
+  "license": "ISC"
+}
