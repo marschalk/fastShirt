@@ -235,6 +235,14 @@ module.exports = class Spreadshirt extends Shop	{
 			await this.page.keyboard.type(String.fromCharCode(13));
 			// kurze pause, ansonsten werden die werte nicht richtig übernommen
 			await this.page.waitFor(210);
+
+			// remove invalid tags
+			await this.page.evaluate(function() {
+					var invalidTags = document.querySelectorAll('.tag-input-item.invalid');
+					invalidTags.forEach(function(tag) {
+							tag.click();
+					});
+			});
 		}
 
 		// preis eingeben
