@@ -39,14 +39,14 @@ module.exports = class Redbubble extends Shop	{
 		await this.page.goto(this.server+'/portfolio/images/new?ref=account-nav-dropdown');
 
 		// auf den upload button warten
-		await this.page.waitForSelector('#select-image-single');
+		await this.page.waitForSelector('#select-image-single', {timeout: 120000});
 
 		// datei hochladen
 		const fileInput = await this.page.$('#select-image-single');
 		await fileInput.uploadFile(filePath);
 
 		// warten bis das design im dom ist
-		await this.page.waitForSelector('.single-upload.has-image');
+		await this.page.waitForSelector('.single-upload.has-image', {timeout: 120000});
 		//await this.page.waitForNavigation({ waitUntil: 'networkidle2' });
 	}
 
@@ -59,7 +59,7 @@ module.exports = class Redbubble extends Shop	{
 
 			break;
 		}
-		await this.page.waitForSelector('.image-box.clothing [data-color="'+this.shirtColor+'"]');
+		await this.page.waitForSelector('.image-box.clothing [data-color="'+this.shirtColor+'"]', {timeout: 120000});
 		await this.page.click('.image-box.clothing [data-color="'+this.shirtColor+'"]');
 
 		// farbe auswählen
@@ -133,7 +133,7 @@ module.exports = class Redbubble extends Shop	{
 
 		title = this.generateTitle(title, 50);
 
-		await this.page.waitForSelector('.product-buttons .disable-all');
+		await this.page.waitForSelector('.product-buttons .disable-all', {timeout: 120000});
 
 		// alle produkte deaktivieren
 		await this.page.evaluate(() => {
@@ -188,7 +188,8 @@ module.exports = class Redbubble extends Shop	{
 
 		// veröffentlichen
 		await this.page.click('#submit-work');
-		await this.page.waitForNavigation({timeout: 120000, waitUntil: 'load'});
+		await this.page.waitForSelector('.default__button--YF_Tb', {timeout: 120000})
+		//await this.page.waitForNavigation({timeout: 120000, waitUntil: 'load'});
 	}
 
 	async close() {

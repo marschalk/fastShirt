@@ -19,7 +19,7 @@ module.exports = class Shirtee extends Shop	{
 	    await this.page.goto(this.server+'/customer/account/login/');
 
 		// cookie bestätigen
-		await this.page.waitForSelector('.cc-dismiss');
+		await this.page.waitForSelector('.cc-dismiss', {timeout: 120000});
 		await this.page.click('.cc-dismiss');
 	}
 
@@ -32,7 +32,7 @@ module.exports = class Shirtee extends Shop	{
 
 	    await this.page.click('#login-form button');
 
-	    await this.page.waitForNavigation();
+	    await this.page.waitForNavigation({timeout: 120000});
 	}
 
 	async uploadDesign(filePath, fileName) {
@@ -41,7 +41,7 @@ module.exports = class Shirtee extends Shop	{
 		await this.page.goto(this.server+'/designer/');
 
 		// auf den file input warten
-		await this.page.waitForSelector('#filesToUpload');
+		await this.page.waitForSelector('#filesToUpload', {timeout: 120000});
 
 		try {
 				// alte bilder entfernen
@@ -101,13 +101,28 @@ module.exports = class Shirtee extends Shop	{
 			document.querySelector('#right-color-group [data-color_id="'+colorId+'"]').click();
 		}, colorId);
 
+		// abstand nach oben korrigieren
+		let top = 25;
+		await this.page.evaluate((top) => {
+				var containerCanvases = window.pd.containerCanvases;
+
+				for(var key in containerCanvases) {
+						containerCanvases[key]._objects.forEach(function(object, i) {
+								containerCanvases[key]._objects[i].top = top;
+						});
+				}
+
+				window.pd.containerCanvases = containerCanvases;
+		}, top);
+
 		// weiter zum hinzufügen der verschiedenen produkte
-		await this.page.waitForSelector('#pd_gt_product');
+		await this.page.waitForSelector('#pd_gt_product', {timeout: 120000});
 		await this.page.click('#pd_gt_product');
 
 		// auf nächsten schritt warten
-		await this.page.waitForSelector('#product-designer');
+		await this.page.waitForSelector('#product-designer', {timeout: 120000});
 
+		/*
 		// abstand nach oben korrigieren
 		await this.page.evaluate(function() {
 				let layers = JSON.parse(window.pd.params.layers);
@@ -119,6 +134,10 @@ module.exports = class Shirtee extends Shop	{
 
 				window.pd.params.layers = JSON.stringify(layers);
 		});
+
+		// kurze pause
+		await this.page.waitFor(200);
+		*/
 
 		// produkte hinzufügen
 		let products = [
@@ -179,7 +198,7 @@ module.exports = class Shirtee extends Shop	{
 		// kurze pause
 		await this.page.waitFor(200);
 
-		await this.page.waitForSelector('#sales_name');
+		await this.page.waitForSelector('#sales_name', {timeout: 120000});
 
 		// kurze pause
 		await this.page.waitFor(200);

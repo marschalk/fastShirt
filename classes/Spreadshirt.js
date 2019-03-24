@@ -29,7 +29,7 @@ module.exports = class Spreadshirt extends Shop	{
 
 	    await this.page.click('.login-form #login-button');
 
-	    await this.page.waitForNavigation();
+	    await this.page.waitForNavigation({timeout: 120000});
 	}
 
 	async uploadDesign(filePath, fileName) {
@@ -38,7 +38,7 @@ module.exports = class Spreadshirt extends Shop	{
 		await this.page.goto(this.server+'/designs');
 
 		// auf den upload button warten
-		await this.page.waitForSelector('#upload-btn');
+		await this.page.waitForSelector('#upload-btn', {timeout: 120000});
 		await this.page.click('#upload-btn');
 
 		// datei hochladen
@@ -70,15 +70,15 @@ module.exports = class Spreadshirt extends Shop	{
 		await this.page.goto(this.server+'/designs');
 
 		// design öffnen
-		await this.page.waitForSelector('.card.idea-state-unpublished .design-preview');
+		await this.page.waitForSelector('.card.idea-state-unpublished .design-preview', {timeout: 120000});
 		await this.page.click('.card.idea-state-unpublished .design-preview');
 
-		await this.page.waitForSelector('.btn-progress.btn-primary');
+		await this.page.waitForSelector('.btn-progress.btn-primary', {timeout: 120000});
 
 		// gibt es eine shop auswahl
 		if(this.hasShops) {
 			// shops auswählen
-			await this.page.waitForSelector('#marketplace-pos-card');
+			await this.page.waitForSelector('#marketplace-pos-card', {timeout: 120000});
 			await this.page.click("#marketplace-pos-card .toggle");
 
 			// weiter
@@ -90,7 +90,7 @@ module.exports = class Spreadshirt extends Shop	{
 			//await this.page.waitForSelector('.toolbar-header .load-template');
 			await this.page.click('.toolbar-header .load-template');
 
-			await this.page.waitForSelector('.apply-template-dialog .template-item');
+			await this.page.waitForSelector('.apply-template-dialog .template-item', {timeout: 120000});
 
 			let i = await this.page.evaluate((template) => {
 				const templates = document.querySelectorAll('.template-item');
@@ -123,7 +123,7 @@ module.exports = class Spreadshirt extends Shop	{
 			// zur produkt hinzufügen seite
 			await this.page.click('.product-list .add-product a');
 
-			await this.page.waitForSelector('.color-filter .color');
+			await this.page.waitForSelector('.color-filter .color', {timeout: 120000});
 
 			// farbe auswählen
 			await this.page.evaluate((shirtColor) => {
@@ -162,7 +162,7 @@ module.exports = class Spreadshirt extends Shop	{
 			await this.page.click('.bottom-toolbar .btn-primary');
 
 			// auf selektor warten
-			await this.page.waitForSelector('#account-settings-save-button');
+			await this.page.waitForSelector('#account-settings-save-button', {timeout: 120000});
 		}
 
 		// standard design vergrössern
@@ -189,14 +189,14 @@ module.exports = class Spreadshirt extends Shop	{
 		});
 
 		// wait for modal closing
-		await this.page.waitForSelector('#account-settings-save-button.modal-close');
+		await this.page.waitForSelector('#account-settings-save-button.modal-close', {timeout: 120000});
 		// kurze pause
 		await this.page.waitFor(100);
 		// click next button
 		await this.page.click('#account-settings-save-button.modal-close', {clickCount: 2});
 
 		// beschreibung und keywords anpassen
-		await this.page.waitForSelector('#input-design-name');
+		await this.page.waitForSelector('#input-design-name', {timeout: 120000});
 
 		if(meta[this.language]['title']) {
 			// title einfügen
@@ -247,13 +247,13 @@ module.exports = class Spreadshirt extends Shop	{
 
 		// preis eingeben
 		await this.page.click('.commission .btn.manual');
-		await this.page.waitForSelector('.manual-input [name="commission"]');
+		await this.page.waitForSelector('.manual-input [name="commission"]', {timeout: 120000});
 		await this.page.click('.manual-input [name="commission"]', {clickCount: 2});
 		await this.page.keyboard.type(this.price);
 
 		// veröffentlichen
 		await this.page.click('.btn-progress.btn-primary');
-		await this.page.waitForSelector('.confirm-dialog');
+		await this.page.waitForSelector('.confirm-dialog', {timeout: 120000});
 	}
 
 	async close() {
