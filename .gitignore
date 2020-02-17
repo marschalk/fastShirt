@@ -1,6 +1,10 @@
+.DS_Store
 node_modules/
 config.json
 *.csv
 !default_upload.csv
 /*.js
 /!main.js
+test/
+wibbles/
+test.zip
