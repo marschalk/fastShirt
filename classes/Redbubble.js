@@ -1,9 +1,19 @@
-const   puppeteer = require('puppeteer');
-const   request = require('request-promise-native');
-const   poll = require('promise-poller').default;
+const   puppeteer = require('puppeteer-extra')
 const 	Log = require('../classes/Log');
 const 	log = new Log();
-const   timeout = millis => new Promise(resolve => setTimeout(resolve, millis));
+const RecaptchaPlugin = require('puppeteer-extra-plugin-recaptcha')
+puppeteer.use(
+  RecaptchaPlugin({
+    provider: {
+      id: '2captcha',
+      token: '86b88e5c291b3486c3917d06b2883f90' // REPLACE THIS WITH YOUR OWN 2CAPTCHA API KEY ⚡
+    },
+    visualFeedback: true // colorize reCAPTCHAs (violet = detected, green = solved)
+  })
+)
+
+const StealthPlugin = require('puppeteer-extra-plugin-stealth')
+puppeteer.use(StealthPlugin())
 
 module.exports = class Redbubble extends Shop	{
 	constructor(config) {
@@ -30,13 +40,7 @@ module.exports = class Redbubble extends Shop	{
 
 	async login() {
 
-		const apiKey = '86b88e5c291b3486c3917d06b2883f90';
-
 		log.info('trying to log in...')
-		// short break because the wait for selector does not seam to fucking work as i thought it might. 
-		await this.page.waitFor(400);
-
-		//const requestId = await this.initiateCaptchaRequest(apiKey);
 
 		await this.page.click('.login-form [name="cognitoUsername"]');
 	    await this.page.keyboard.type(this.user);
@@ -44,55 +48,20 @@ module.exports = class Redbubble extends Shop	{
 	    await this.page.click('.login-form [name="password"]');
 	    await this.page.keyboard.type(this.pw);
 
-		//log.info(`requestId: ${requestId}`);
+	    // That's it, a single line of code to solve reCAPTCHAs 🎉
+  		await this.page.solveRecaptchas()
 
-		await this.page.click('.login-form button'); 
+  		// Loop over all potential frames on that page
+		for (const frame of this.page.mainFrame().childFrames()) {
+  			// Attempt to solve any potential reCAPTCHAs in those frames
+  			await frame.solveRecaptchas()
+		}
 
-		const requestId = await this.initiateCaptchaRequest(apiKey);
-		log.info(`requestId: ${requestId}`);
+		await Promise.all([
+    		this.page.waitForNavigation(),
+    		this.page.click('.login-form button')
+    	]); 
 
-	    const response = await this.pollForRequestResults(apiKey, requestId);
-	    log.info(`response: ${response}`);
-	    await page.evaluate(`document.getElementById("g-recaptcha-response").innerHTML="${response}";`);
-
-	    await this.page.waitForNavigation({timeout: 10, waitUntil: 'load'});
-	}
-
-	async initiateCaptchaRequest(apiKey) {
-		log.info('initiating Captcha request');
-		const formData = {
-			method: 'userrecaptcha',
-			googleKey: '6LdkZisUAAAAACQ1YvSn_fsTXRLoNCsiYuoKyDH7',
-			pageurl: 'https://www.redbubble.com/auth/login',
-			key: apiKey,
-			json: 1
-
-		};
-		const response = await request.post('http://2captcha.com/in.php', {form: formData});
-		return JSON.parse(response).request;
-	}
-
-	async pollForRequestResults(key, id, retries = 30, interval = 1500, delay = 15000) {
-		log.info('Polling Captcha results');
-  		await timeout(delay);
-  		return poll({
-    		taskFn: requestCaptchaResults(key, id),
-    		interval,
-    		retries
-  		});
-	}
-
-    requestCaptchaResults(apiKey, requestId) {
-		log.info('Collecting Captcha results');
-  		const url = `http://2captcha.com/res.php?key=${apiKey}&action=get&id=${requestId}&json=1`;
-  		return async function() {
-    		return new Promise(async function(resolve, reject){
-      			const rawResponse = await request.get(url);
-      			const resp = JSON.parse(rawResponse);
-      			if (resp.status === 0) return reject(resp.request);
-      			resolve(resp.request);
-    		});
-  		}
 	}
 
 

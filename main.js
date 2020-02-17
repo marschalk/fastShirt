@@ -63,7 +63,7 @@ function runShop(shopClass, shopConf) {
 			shopObj.login().then(() => {
 				uploadFile(shopObj, 0, shopConf['csvCheckField']);
 			}).catch((err) => {
-				log.error('Login failed: '+ shopObj.server + ' with '+ shopObj.user);
+				log.error('Login failed: '+ shopObj.server + ' with '+ shopObj.user + err);
 				const rl = readline.createInterface(process.stdin, process.stdout);
 				rl.question('Try again (y/n): ', (answer) => {
 					rl.close();
