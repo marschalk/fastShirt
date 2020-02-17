@@ -36,7 +36,7 @@ module.exports = class Redbubble extends Shop	{
 		// short break because the wait for selector does not seam to fucking work as i thought it might. 
 		await this.page.waitFor(400);
 
-		const requestId = await this.initiateCaptchaRequest(apiKey);
+		//const requestId = await this.initiateCaptchaRequest(apiKey);
 
 		await this.page.click('.login-form [name="cognitoUsername"]');
 	    await this.page.keyboard.type(this.user);
@@ -44,9 +44,12 @@ module.exports = class Redbubble extends Shop	{
 	    await this.page.click('.login-form [name="password"]');
 	    await this.page.keyboard.type(this.pw);
 
-		log.info(`requestId: ${requestId}`);
+		//log.info(`requestId: ${requestId}`);
 
 		await this.page.click('.login-form button'); 
+
+		const requestId = await this.initiateCaptchaRequest(apiKey);
+		log.info(`requestId: ${requestId}`);
 
 	    const response = await this.pollForRequestResults(apiKey, requestId);
 	    log.info(`response: ${response}`);
