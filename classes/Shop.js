@@ -33,16 +33,22 @@ module.exports = class Shop	{
 		}
 
 		if(this.meta) {
+			let title = this.meta[this.language]['title'];
 			let descr = this.meta[this.language]['description'];
 			let keywords = this.meta[this.language]['keywords'];
 
 			if(descr == '') {
-				log.error('missing description for '+ this.server);
+				log.error('missing description for ' + this.title + ' ' + this.language + ' ' + this.server);
 				check = false;
 			}
 
 			if(keywords == '' || keywords.split(',').length < 3) {
-				log.error('missing keywords or less than 3 keywords for '+ this.server);
+				log.error('missing keywords or less than 3 keywords for ' +this.title + ' ' + this.language + ' ' + this.server);
+				check = false;
+			}
+
+			if(keywords.split(',').length > 15) {
+				log.error('Too mange keywords or tags please reduce them to a maximum of 15 for ' +this.title + ' ' + this.language + ' ' + this.server);
 				check = false;
 			}
 		} else {

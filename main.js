@@ -20,7 +20,7 @@ log.info('--- '+package.name+' '+package.version+' ---');
 let aCSVData = [];
 let aCSVHeader = [];
 fs.createReadStream(csvFile)
-.pipe(csv({headers: true, delimiter:';'}))
+.pipe(csv({headers: true, delimiter:','}))
 .on('data', function(data) {
 	aCSVData.push(data);
 
@@ -89,12 +89,12 @@ function uploadFile(obj, counter, fieldShopKey) {
 			"de": {
 				"title": aRow['title_de'],
 				"description": aRow['description_de'],
-				"keywords": aRow['keywords_de']
+				"keywords": correctKeywords(aRow['keywords_de'])
 			},
 			"en": {
 				"title": aRow['title_en'],
 				"description": aRow['description_en'],
-				"keywords": aRow['keywords_en']
+				"keywords": correctKeywords(aRow['keywords_en'])
 			}
 		});
 
@@ -104,20 +104,22 @@ function uploadFile(obj, counter, fieldShopKey) {
 		// 0 = no upload
 		// 2 = already uploaded
 		if(aRow[fieldShopKey] == 1 && obj.checkConf()) {
-			log.info('Upload '+(counter + 1)+' von '+ aCSVData.length + ' - '+obj.server);
+			log.info('Upload '+(counter + 1)+' of '+ aCSVData.length + ' - '+obj.server);
 
 			var path = aRow['path'];
-			// redbubble path, da hier eine andere größe hochgeladen wird
+			// redbubble path, because a different size is uploaded here
 			if(obj.path) {
-					path = aRow['path'] + obj.path;
+					path = aRow['path'] + '/' + obj.path;
 			}
+			log.info(`path: ${path}`);
 
-			// existiert die datei?
+			// the file exists?
 			if(!fileExists(path + aRow['file'])) {
-					log.info('File Not Found: ' + aRow['path'] + aRow['file']);
+					//log.info('File Not Found: ' + aRow['path'] + aRow['file']);
+					log.info('File Not Found: ' + path + aRow['file']);
 					uploadFile(obj, counter + 1, fieldShopKey);
 			}else {
-					obj.uploadDesign(aRow['path'] + aRow['file'], aRow['file']).then(() => {
+					obj.uploadDesign(path + aRow['file'], aRow['file']).then(() => {
 							obj.editDesign().then(() => {
 									aCSVData[counter][fieldShopKey] = 2;
 									updateCSV();
@@ -167,7 +169,7 @@ function updateCSV() {
 		aCSVFileData.push(aCSVRow);
 	}
 
-	csv.write(aCSVFileData, {headers: true, delimiter:';'})
+	csv.write(aCSVFileData, {headers: true, delimiter:','})
 	.pipe(ws);
 }
 
@@ -177,4 +179,13 @@ function fileExists(filePath) {
     }catch (err) {
         return false;
     }
+}
+
+function correctKeywords(keywords) {
+	if(!keywords == '') {
+		//replace the ';' with a ',' for use as comma seperated keywords
+		keywords = keywords.replace(/;/g,",");
+		log.info('replaced semicolon in keywords with commas for real power usage :-) :' + keywords);
+	}
+	return keywords;
 }
