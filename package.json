@@ -1,6 +1,6 @@
 {
   "name": "fast-shirt",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Fast Design upload to Spreadshirt, Shirtee and Redbubble. Set Description, Keyword and Color.",
   "main": "main.js",
   "dependencies": {
